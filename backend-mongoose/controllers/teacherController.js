@@ -1,27 +1,73 @@
-const Teacher =  require('../models/Teachers')
+const Teacher = require("../models/Teacher");
 
-const getTeachers = async(req,res)=>{
-    try{
-        const teachers = await Teachers.find();
-        res.json(teachers)
-    }
-    catch(error){
-        res.status(500).json({message:errormessage});
-    }
+// CREATE TEACHER
+exports.createTeacher = async (req, res) => {
+  try {
+    const { name, subject, experience } = req.body;
+
+    const photo = req.file ? req.file.filename : "";
+
+    const newTeacher = new Teacher({
+      name,
+      subject,
+      experience,
+      photo,
+    });
+
+    await newTeacher.save();
+    res.status(201).json(newTeacher);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
-const addTeachers = async(req,res)=>{
-        try{
-    const {name, subject, experience} = req.body()
-    const photo = req.file? req.file.filename : "";
-   
-        const newTeachers = new Teachers({name, subject, experience, photo})
-        await newTeachers.save()
-        res.status(201).json(newTeachers)
-     }
-        catch(error){
-        res.status(400).json({message: error.message});
-    }
+// GET ALL TEACHERS
+exports.getTeachers = async (req, res) => {
+  try {
+    const teachers = await Teacher.find();
+    res.status(200).json(teachers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
-module.exports(getTeachers, addTeachers)
+// GET ONE TEACHER
+exports.getTeacherById = async (req, res) => {
+  try {
+    const teacher = await Teacher.findById(req.params.id);
+    if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+
+    res.status(200).json(teacher);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// UPDATE TEACHER
+exports.updateTeacher = async (req, res) => {
+  try {
+    const { name, subject, experience } = req.body;
+
+    const photo = req.file ? req.file.filename : undefined;
+
+    const updatedTeacher = await Teacher.findByIdAndUpdate(
+      req.params.id,
+      { name, subject, experience, ...(photo && { photo }) },
+      { new: true }
+    );
+
+    res.status(200).json(updatedTeacher);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// DELETE TEACHER
+exports.deleteTeacher = async (req, res) => {
+  try {
+    await Teacher.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Teacher deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

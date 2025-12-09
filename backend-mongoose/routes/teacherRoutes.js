@@ -1,11 +1,27 @@
 const express = require("express");
-const router = express.Router;
-const{getTeacher, addTeacher}= require('../controllers/teacherController')
-const upload = require('../midelware/upload');
+const router = express.Router();
+const upload = require("../middleware/upload");
+const {
+  createTeacher,
+  getTeachers,
+  getTeacherById,
+  updateTeacher,
+  deleteTeacher,
+} = require("../controllers/teacherController");
 
-//
-router.get("/",getTeachers);
+// CREATE (with photo upload)
+router.post("/", upload.single("photo"), createTeacher);
 
-router.post("/",postTeachers);
+// GET ALL
+router.get("/", getTeachers);
+
+// GET ONE
+router.get("/:id", getTeacherById);
+
+// UPDATE (with optional photo)
+router.put("/:id", upload.single("photo"), updateTeacher);
+
+// DELETE
+router.delete("/:id", deleteTeacher);
 
 module.exports = router;
