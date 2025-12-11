@@ -15,6 +15,7 @@ exports.createTeacher = async (req, res) => {
     });
 
     await newTeacher.save();
+
     res.status(201).json(newTeacher);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -55,6 +56,7 @@ exports.updateTeacher = async (req, res) => {
       { name, subject, experience, ...(photo && { photo }) },
       { new: true }
     );
+//photo && { photo }  --   { photo: "alice.jpg" }
 
     res.status(200).json(updatedTeacher);
   } catch (error) {

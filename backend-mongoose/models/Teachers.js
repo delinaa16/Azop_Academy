@@ -1,20 +1,27 @@
+// Import mongoose to create schemas and models
 const mongoose = require("mongoose");
 
+// Define the structure of a Teacher document
 const teacherSchema = new mongoose.Schema({
-    name:{
+    name: {
         type: String,
-        required:true,
+        required: true
     },
-    subject:{
+    subject: {
         type: String,
-        required:true,
+        required: true
     },
-    experience:{
+    experience: {
         type: String,
-        required:true,
+        required: true
     },
-    photo:{
+    photo: {
         type: String,
-        default: "",
-    },
+        default: ""
+    }
+}, {
+    timestamps: true // Adds createdAt and updatedAt automatically
 });
+
+// Export the model so controllers can use it
+module.exports = mongoose.model("Teacher", teacherSchema);
