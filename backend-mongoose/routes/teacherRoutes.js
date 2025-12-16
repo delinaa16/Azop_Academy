@@ -1,27 +1,29 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
+
+// Import controller functions with correct names
 const {
   createTeacher,
-  getTeachers,
-  getTeacherById,
-  updateTeacher,
+  getAllTeachers,
+  getTeachersById,
+  updateTeachers,
   deleteTeacher,
 } = require("../controllers/teacherController");
 
-// CREATE (with photo upload)
+// CREATE teacher (with optional photo upload)
 router.post("/", upload.single("photo"), createTeacher);
 
-// GET ALL
-router.get("/", getTeachers);
+// GET all teachers
+router.get("/", getAllTeachers);
 
-// GET ONE
-router.get("/:id", getTeacherById);
+// GET a single teacher by ID
+router.get("/:id", getTeachersById);
 
-// UPDATE (with optional photo)
-router.put("/:id", upload.single("photo"), updateTeacher);
+// UPDATE teacher (with optional photo upload)
+router.put("/:id", upload.single("photo"), updateTeachers);
 
-// DELETE
+// DELETE teacher
 router.delete("/:id", deleteTeacher);
 
 module.exports = router;
