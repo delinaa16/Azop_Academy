@@ -95,3 +95,4 @@ npm start
 API Base URL
 
 http://localhost:5000/api
+"Features updated and stabilized." 
