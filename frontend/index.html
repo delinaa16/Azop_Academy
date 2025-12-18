@@ -1,87 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azop Academy</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azop Academy</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="#">Azop Academy</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('home')">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('teachers')">Teachers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('programs')">Programs</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('gallery')">Gallery</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSection('contact')">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <div id="home" class="section">
-            <h1>Welcome to Azop Academy</h1>
-            <p>Empowering young minds through quality education.</p>
-        </div>
-
-        <div id="teachers" class="section d-none">
-            <h2>Our Teachers</h2>
-            <div id="teachers-list" class="row"></div>
-        </div>
-
-        <div id="programs" class="section d-none">
-            <h2>Our Programs</h2>
-            <div id="programs-list" class="row"></div>
-        </div>
-
-        <div id="gallery" class="section d-none">
-            <h2>Gallery</h2>
-            <div id="gallery-images" class="row"></div>
-        </div>
-
-        <div id="contact" class="section d-none">
-            <h2>Contact Us</h2>
-            <form id="contact-form">
-                <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" required>
-                </div>
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" required>
-                </div>
-                <div class="mb-3">
-                    <label for="phone" class="form-label">Phone</label>
-                    <input type="text" class="form-control" id="phone">
-                </div>
-                <div class="mb-3">
-                    <label for="message" class="form-label">Message</label>
-                    <textarea class="form-control" id="message" rows="4" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Send Message</button>
-            </form>
-        </div>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm sticky-top nav-glass">
+    <div class="container">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#" onclick="showSection('home')">
+        <span class="brand-mark">A</span>
+        <span>Azop Academy</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link active" data-section="home" href="#" onclick="showSection('home')">Home</a></li>
+          <li class="nav-item"><a class="nav-link" data-section="teachers" href="#" onclick="showSection('teachers')">Teachers</a></li>
+          <li class="nav-item"><a class="nav-link" data-section="programs" href="#" onclick="showSection('programs')">Programs</a></li>
+          <li class="nav-item"><a class="nav-link" data-section="gallery" href="#" onclick="showSection('gallery')">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" data-section="contact" href="#" onclick="showSection('contact')">Contact</a></li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-brand btn-sm px-3" href="#" onclick="showSection('contact')">
+              <i class="bi bi-stars me-1"></i> Enroll
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+  <!-- Hero -->
+  <section id="home" class="section hero-section text-light">
+    <div class="container py-5 position-relative">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="badge badge-soft mb-3"><i class="bi bi-lightning-charge-fill me-1"></i> Modern learning • Real results</span>
+          <h1 class="display-4 fw-bold lh-sm">Where creativity meets knowledge — and young minds thrive.</h1>
+          <p class="lead text-white-75 mt-3">Azop Academy is a warm, inspiring place for students to learn, build confidence, and grow with caring teachers and engaging programs.</p>
+          <div class="d-flex flex-wrap gap-2 mt-4">
+            <a class="btn btn-brand btn-lg px-4" href="#" onclick="showSection('programs')">
+              Explore Programs <i class="bi bi-arrow-right-short"></i>
+            </a>
+            <a class="btn btn-outline-light btn-lg px-4" href="#" onclick="showSection('contact')">
+              Talk to Us
+            </a>
+          </div>
+          <div class="stats mt-5">
+            <div class="stat">
+              <div class="stat-num" id="stat-teachers">—</div>
+              <div class="stat-label">Active teachers</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="stat-programs">—</div>
+              <div class="stat-label">Programs</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num" id="stat-gallery">—</div>
+              <div class="stat-label">Gallery sets</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="hero-card">
+            <div class="hero-card-top">
+              <div class="hero-icon"><i class="bi bi-mortarboard-fill"></i></div>
+              <div>
+                <div class="fw-semibold">Start a new journey</div>
+                <div class="text-muted small">Fast response • Friendly guidance</div>
+              </div>
+            </div>
+            <ul class="hero-list mt-3">
+              <li><i class="bi bi-check2-circle"></i> Skilled, caring teachers</li>
+              <li><i class="bi bi-check2-circle"></i> Creative programs & activities</li>
+              <li><i class="bi bi-check2-circle"></i> Safe, supportive environment</li>
+            </ul>
+            <div class="hero-card-cta mt-4">
+              <button class="btn btn-dark w-100" onclick="showSection('contact')">
+                <i class="bi bi-chat-dots-fill me-1"></i> Request information
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container my-5">
+
+    <!-- Teachers Section -->
+    <section id="teachers" class="section d-none">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title mb-1">Meet Our Teachers</h2>
+          <p class="text-muted mb-0">Experienced mentors who inspire and support every student.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group input-group-sm input-group-soft">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input id="teacher-search" type="text" class="form-control" placeholder="Search by name or subject">
+          </div>
+          <button class="btn btn-outline-secondary btn-sm" id="teacher-refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+      <div id="teachers-state" class="state"></div>
+      <div id="teachers-list" class="row g-4"></div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="section d-none">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title mb-1">Our Programs</h2>
+          <p class="text-muted mb-0">Practical, engaging programs designed for real growth.</p>
+        </div>
+        <div class="d-flex gap-2">
+          <div class="input-group input-group-sm input-group-soft">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input id="program-search" type="text" class="form-control" placeholder="Search programs">
+          </div>
+          <button class="btn btn-outline-secondary btn-sm" id="program-refresh">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+      <div id="programs-state" class="state"></div>
+      <div id="programs-list" class="row g-4"></div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="section d-none">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title mb-1">Gallery</h2>
+          <p class="text-muted mb-0">Moments from classes, activities, and student creations.</p>
+        </div>
+        <button class="btn btn-outline-secondary btn-sm" id="gallery-refresh">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+      <div id="gallery-state" class="state"></div>
+      <div id="gallery-images" class="row g-3"></div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section d-none">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title mb-1">Contact Us</h2>
+          <p class="text-muted mb-0">Send a message — we’ll respond as soon as possible.</p>
+        </div>
+      </div>
+      <form id="contact-form" class="row g-3">
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="name" placeholder="Name" required>
+        </div>
+        <div class="col-md-6">
+          <input type="email" class="form-control" id="email" placeholder="Email" required>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="phone" placeholder="Phone">
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="subject" placeholder="Subject (optional)">
+        </div>
+        <div class="col-12">
+          <textarea class="form-control" id="message" rows="4" placeholder="Your message" required></textarea>
+        </div>
+        <div class="col-12">
+          <button type="submit" class="btn btn-dark w-100" id="contact-submit">
+            <span class="btn-text">Send Message</span>
+            <span class="spinner-border spinner-border-sm ms-2 d-none" id="contact-spinner" role="status" aria-hidden="true"></span>
+          </button>
+        </div>
+      </form>
+      <div id="contact-alert" class="mt-3"></div>
+    </section>
+
+  </div>
+
+  <!-- Lightbox Modal -->
+  <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content modal-glass">
+        <div class="modal-header border-0">
+          <h5 class="modal-title">Gallery</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-0">
+          <img id="lightboxImg" class="img-fluid rounded-3 w-100" alt="Gallery image">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-dark text-light py-4 text-center">
+    &copy; 2025 Azop Academy. All Rights Reserved.
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

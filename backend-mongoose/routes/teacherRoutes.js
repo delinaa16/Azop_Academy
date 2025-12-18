@@ -1,29 +1,32 @@
 const express = require("express");
 const router = express.Router();
 const upload = require("../middleware/upload");
-
-// Import controller functions with correct names
-const {
-  createTeacher,
-  getAllTeachers,
-  getTeachersById,
-  updateTeachers,
-  deleteTeacher,
+const auth = require("../middleware/auth");
+const { 
+  createTeacher, 
+  getAllTeachers, 
+  getTeachersById, 
+  updateTeachers, 
+  deleteTeacher, 
+  searchTeachers // import the new search function
 } = require("../controllers/teacherController");
 
-// CREATE teacher (with optional photo upload)
-router.post("/", upload.single("photo"), createTeacher);
+// CREATE (with photo upload)
+router.post("/", auth, upload.single("photo"), createTeacher);
 
-// GET all teachers
+// GET ALL
 router.get("/", getAllTeachers);
 
-// GET a single teacher by ID
+// SEARCH
+router.get("/search", searchTeachers); // new search route
+
+// GET ONE
 router.get("/:id", getTeachersById);
 
-// UPDATE teacher (with optional photo upload)
-router.put("/:id", upload.single("photo"), updateTeachers);
+// UPDATE (with optional photo)
+router.put("/:id", auth, upload.single("photo"), updateTeachers);
 
-// DELETE teacher
-router.delete("/:id", deleteTeacher);
+// DELETE
+router.delete("/:id", auth, deleteTeacher);
 
 module.exports = router;

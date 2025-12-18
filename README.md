@@ -1,7 +1,7 @@
-﻿AZOP Academy – Backend API
-Node.js • Express.js • MongoDB
+﻿AZOP Academy – Full Stack (Frontend + Backend)
+Node.js • Express.js • MongoDB • Vanilla JS + Bootstrap
 
-This repository contains the backend API for AZOP Academy, designed to manage teachers, academic programs, gallery assets, and contact inquiries. The system provides secure data handling, structured routing, file uploads, and a modular architecture suitable for production environments.
+This repository contains both the **backend API** and a **modern single-page frontend** for AZOP Academy. The backend manages teachers, programs, gallery assets, and contact inquiries, and also serves the frontend UI so everything runs from a single URL.
 Features
 
 Teachers Module
@@ -19,6 +19,11 @@ Retrieve all gallery items
 Contact Module
 Submit contact messages
 Retrieve contact submissions for administrative purposes
+Mark messages as read / archive / delete (admin-protected)
+
+Admin Auth
+Create the first admin (one-time)
+Login to get a JWT token for protected routes
 
 File Upload System
 Image uploads using Multer
@@ -80,7 +85,7 @@ Installation & Setup
 npm install
 
 2. Environment Variables
-Create a .env file in the project root:
+Create a `.env` file inside `backend-mongoose/` (see `backend-mongoose/env.example.txt`):
 
 PORT=5000
 MONGO_URL=mongodb://127.0.0.1:27017/kindergarten
@@ -88,11 +93,38 @@ APP_NAME=AZOP Academy
 DEBUG_MODE=true
 
 
-3. Run the Development Server
+3. Install backend deps (first time)
+
+Run in `backend-mongoose/`:
+
+npm install
+
+4. Run the server
+
+From the repo root:
+
 npm start
+
+Or from `backend-mongoose/`:
+
+npm run dev
 
 
 API Base URL
 
 http://localhost:5000/api
+"Features updated and stabilized."
+
+Frontend URL
+
+Open the app at:
+
+http://localhost:5000/
+
+Admin Setup (first run)
+
+Create the first admin account (only works if no admin exists yet):
+
+POST /api/admin/register-first
+{ "username": "admin", "password": "admin123" }
 "Features updated and stabilized." 

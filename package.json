@@ -1,5 +1,12 @@
 {
+  "name": "azop_academy",
+  "private": true,
   "dependencies": {
+    "express-validator": "^7.3.1",
     "multer": "^2.0.2"
+  },
+  "scripts": {
+    "start": "npm --prefix backend-mongoose start",
+    "dev": "npm --prefix backend-mongoose run dev"
   }
 }

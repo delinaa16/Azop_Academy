@@ -1,112 +1,290 @@
-const API_BASE = 'http://localhost:5000/api';
+// Small helpers
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (s = "") =>
+  String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m]));
 
-function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => section.classList.add('d-none'));
-    document.getElementById(sectionId).classList.remove('d-none');
+async function apiFetch(path, options = {}) {
+  const res = await fetch(path, {
+    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+    ...options,
+  });
 
-    if (sectionId === 'teachers') loadTeachers();
-    if (sectionId === 'programs') loadPrograms();
-    if (sectionId === 'gallery') loadGallery();
+  let body = null;
+  const ct = res.headers.get("content-type") || "";
+  if (ct.includes("application/json")) body = await res.json();
+  else body = await res.text();
+
+  if (!res.ok) {
+    const message = body?.message || (Array.isArray(body?.errors) ? body.errors.map((e) => e.msg).join(", ") : null) || "Request failed";
+    const err = new Error(message);
+    err.status = res.status;
+    err.body = body;
+    throw err;
+  }
+  return body;
+}
+
+function setNavActive(sectionId) {
+  document.querySelectorAll("[data-section]").forEach((a) => {
+    a.classList.toggle("active", a.dataset.section === sectionId);
+  });
+}
+
+// Toggle sections
+function showSection(id) {
+  document.querySelectorAll(".section").forEach((sec) => sec.classList.add("d-none"));
+  $(id)?.classList.remove("d-none");
+  setNavActive(id);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+window.showSection = showSection;
+
+function imgUrl(filename) {
+  if (!filename) return "";
+  return `/uploads/images/${encodeURIComponent(filename)}`;
+}
+
+function setState(el, kind, message) {
+  if (!el) return;
+  if (!kind) {
+    el.innerHTML = "";
+    return;
+  }
+  const klass = kind === "error" ? "alert-danger" : kind === "info" ? "alert-info" : "alert-secondary";
+  el.innerHTML = `<div class="alert ${klass} mb-0">${escapeHtml(message)}</div>`;
+}
+
+function skeletonCards(count = 6) {
+  return Array.from({ length: count })
+    .map(
+      () => `
+    <div class="col-md-6 col-lg-4">
+      <div class="card">
+        <div style="height:220px;background:linear-gradient(90deg,#f1f5f9,#e2e8f0,#f1f5f9);background-size:200% 100%;animation:shimmer 1.2s infinite;"></div>
+        <div class="card-body">
+          <div style="height:14px;width:60%;background:#e2e8f0;border-radius:8px;"></div>
+          <div class="mt-2" style="height:10px;width:85%;background:#edf2f7;border-radius:8px;"></div>
+          <div class="mt-2" style="height:10px;width:70%;background:#edf2f7;border-radius:8px;"></div>
+        </div>
+      </div>
+    </div>`
+    )
+    .join("");
+}
+
+// Load Stats
+async function loadStats() {
+  try {
+    const stats = await apiFetch("/api/stats");
+    $("stat-teachers").textContent = stats.teachers ?? "—";
+    $("stat-programs").textContent = stats.programs ?? "—";
+    $("stat-gallery").textContent = stats.galleryEntries ?? "—";
+  } catch {
+    // Non-blocking
+  }
 }
 
 // Load Teachers
+let allTeachers = [];
 async function loadTeachers() {
-    try {
-        const response = await fetch(`${API_BASE}/teachers`);
-        const teachers = await response.json();
-        const container = document.getElementById('teachers-list');
-        container.innerHTML = '';
-        teachers.forEach(teacher => {
-            const col = document.createElement('div');
-            col.className = 'col-md-4';
-            col.innerHTML = `
-                <div class="card">
-                    ${teacher.photo ? `<img src="${API_BASE.replace('/api', '')}/uploads/images/${teacher.photo}" class="card-img-top" alt="${teacher.name}">` : ''}
-                    <div class="card-body">
-                        <h5 class="card-title">${teacher.name}</h5>
-                        <p class="card-text">Subject: ${teacher.subject}</p>
-                        <p class="card-text">Experience: ${teacher.experience}</p>
-                    </div>
-                </div>
-            `;
-            container.appendChild(col);
-        });
-    } catch (error) {
-        console.error('Error loading teachers:', error);
-    }
+  const stateEl = $("teachers-state");
+  const container = $("teachers-list");
+  setState(stateEl, "info", "Loading teachers…");
+  container.innerHTML = skeletonCards(6);
+
+  try {
+    const resp = await apiFetch("/api/teachers?limit=50");
+    const data = Array.isArray(resp) ? resp : resp.data || [];
+    allTeachers = data;
+    renderTeachers();
+    setState(stateEl, null);
+  } catch (e) {
+    container.innerHTML = "";
+    setState(stateEl, "error", e.message);
+  }
+}
+
+function renderTeachers() {
+  const q = ($("teacher-search")?.value || "").trim().toLowerCase();
+  const container = $("teachers-list");
+
+  const filtered = allTeachers.filter((t) => {
+    if (!q) return true;
+    return `${t.name || ""} ${t.subject || ""}`.toLowerCase().includes(q);
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="col-12"><div class="alert alert-secondary mb-0">No teachers found.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered
+    .map((teacher) => {
+      const photo = teacher.photo ? imgUrl(teacher.photo) : "https://placehold.co/800x600?text=Azop+Academy";
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 fade-in">
+          <img src="${photo}" class="card-img-top" alt="${escapeHtml(teacher.name)}" loading="lazy">
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between gap-2">
+              <h5 class="card-title mb-1">${escapeHtml(teacher.name)}</h5>
+              <span class="pill"><i class="bi bi-person-badge"></i> Teacher</span>
+            </div>
+            <div class="text-muted">Subject: ${escapeHtml(teacher.subject)}</div>
+            <div class="text-muted">Experience: ${escapeHtml(teacher.experience)}</div>
+          </div>
+        </div>
+      </div>`;
+    })
+    .join("");
 }
 
 // Load Programs
+let allPrograms = [];
 async function loadPrograms() {
-    try {
-        const response = await fetch(`${API_BASE}/programs`);
-        const programs = await response.json();
-        const container = document.getElementById('programs-list');
-        container.innerHTML = '';
-        programs.forEach(program => {
-            const col = document.createElement('div');
-            col.className = 'col-md-4';
-            col.innerHTML = `
-                <div class="card">
-                    ${program.image ? `<img src="${API_BASE.replace('/api', '')}/uploads/images/${program.image}" class="card-img-top" alt="${program.title}">` : ''}
-                    <div class="card-body">
-                        <h5 class="card-title">${program.title}</h5>
-                        <p class="card-text">${program.description}</p>
-                        <p class="card-text"><small class="text-muted">Duration: ${program.duration}</small></p>
-                    </div>
-                </div>
-            `;
-            container.appendChild(col);
-        });
-    } catch (error) {
-        console.error('Error loading programs:', error);
-    }
+  const stateEl = $("programs-state");
+  const container = $("programs-list");
+  setState(stateEl, "info", "Loading programs…");
+  container.innerHTML = skeletonCards(6);
+
+  try {
+    const resp = await apiFetch("/api/programs?limit=50");
+    const data = Array.isArray(resp) ? resp : resp.data || [];
+    allPrograms = data;
+    renderPrograms();
+    setState(stateEl, null);
+  } catch (e) {
+    container.innerHTML = "";
+    setState(stateEl, "error", e.message);
+  }
+}
+
+function renderPrograms() {
+  const q = ($("program-search")?.value || "").trim().toLowerCase();
+  const container = $("programs-list");
+  const filtered = allPrograms.filter((p) => {
+    if (!q) return true;
+    return `${p.title || ""} ${p.description || ""}`.toLowerCase().includes(q);
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="col-12"><div class="alert alert-secondary mb-0">No programs found.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = filtered
+    .map((program) => {
+      const image = program.image ? imgUrl(program.image) : "https://placehold.co/800x600?text=Program";
+      return `
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 fade-in">
+          <img src="${image}" class="card-img-top" alt="${escapeHtml(program.title)}" loading="lazy">
+          <div class="card-body">
+            <div class="d-flex align-items-start justify-content-between gap-2">
+              <h5 class="card-title mb-1">${escapeHtml(program.title)}</h5>
+              <span class="pill"><i class="bi bi-calendar3"></i> ${escapeHtml(program.duration || "Flexible")}</span>
+            </div>
+            <p class="card-text mt-2 mb-0">${escapeHtml(program.description || "A focused learning program designed for student growth.")}</p>
+          </div>
+        </div>
+      </div>`;
+    })
+    .join("");
 }
 
 // Load Gallery
 async function loadGallery() {
-    try {
-        const response = await fetch(`${API_BASE}/gallery`);
-        const galleries = await response.json();
-        const container = document.getElementById('gallery-images');
-        container.innerHTML = '';
-        galleries.forEach(gallery => {
-            gallery.images.forEach(image => {
-                const col = document.createElement('div');
-                col.className = 'col-md-3';
-                col.innerHTML = `<img src="${API_BASE.replace('/api', '')}/uploads/images/${image}" class="img-fluid" alt="Gallery Image">`;
-                container.appendChild(col);
-            });
-        });
-    } catch (error) {
-        console.error('Error loading gallery:', error);
+  const stateEl = $("gallery-state");
+  const container = $("gallery-images");
+  setState(stateEl, "info", "Loading gallery…");
+  container.innerHTML = "";
+
+  try {
+    const data = await apiFetch("/api/gallery");
+    const images = [];
+    (data || []).forEach((item) => (item.images || []).forEach((img) => images.push(img)));
+
+    if (images.length === 0) {
+      setState(stateEl, "info", "No gallery images yet.");
+      return;
     }
+
+    setState(stateEl, null);
+    container.innerHTML = images
+      .slice(0, 24)
+      .map((img) => {
+        const src = imgUrl(img);
+        return `<div class="col-6 col-md-4 col-lg-3"><img class="fade-in" src="${src}" alt="Gallery image" loading="lazy" data-lightbox="${src}"></div>`;
+      })
+      .join("");
+  } catch (e) {
+    setState(stateEl, "error", e.message);
+  }
 }
 
-// Handle Contact Form
-document.getElementById('contact-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData);
+// Lightbox
+function setupLightbox() {
+  const modalEl = $("lightboxModal");
+  if (!modalEl) return;
+  const modal = new bootstrap.Modal(modalEl);
+  const img = $("lightboxImg");
 
-    try {
-        const response = await fetch(`${API_BASE}/contact`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        if (response.ok) {
-            alert('Message sent successfully!');
-            e.target.reset();
-        } else {
-            alert('Error sending message.');
-        }
-    } catch (error) {
-        console.error('Error sending message:', error);
-    }
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    const src = target.getAttribute("data-lightbox");
+    if (!src) return;
+    img.src = src;
+    modal.show();
+  });
+}
+
+// Contact form
+$("contact-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const alertBox = $("contact-alert");
+  const spinner = $("contact-spinner");
+  const submit = $("contact-submit");
+
+  const name = $("name").value;
+  const email = $("email").value;
+  const phone = $("phone").value;
+  const subject = $("subject").value;
+  const message = $("message").value;
+
+  submit.disabled = true;
+  spinner.classList.remove("d-none");
+  alertBox.innerHTML = "";
+
+  try {
+    const data = await apiFetch("/api/contact", {
+      method: "POST",
+      body: JSON.stringify({ name, email, phone, subject, message }),
+    });
+    alertBox.innerHTML = `<div class="alert alert-success">${escapeHtml(data.message || "Message sent!")}</div>`;
+    $("contact-form").reset();
+  } catch (err) {
+    alertBox.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message || "Failed to send message")}</div>`;
+  } finally {
+    submit.disabled = false;
+    spinner.classList.add("d-none");
+  }
 });
 
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    showSection('home');
-});
+// Wire up UI events
+function wireUi() {
+  $("teacher-search")?.addEventListener("input", renderTeachers);
+  $("program-search")?.addEventListener("input", renderPrograms);
+  $("teacher-refresh")?.addEventListener("click", loadTeachers);
+  $("program-refresh")?.addEventListener("click", loadPrograms);
+  $("gallery-refresh")?.addEventListener("click", loadGallery);
+}
+
+// Initial load
+wireUi();
+setupLightbox();
+showSection("home");
+loadStats();
+loadTeachers();
+loadPrograms();
+loadGallery();
