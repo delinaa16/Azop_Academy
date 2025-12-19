@@ -13,6 +13,10 @@ const programRoutes = require("./routes/programRoutes");
 const galleryRoutes = require("./routes/galleryRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const waitlistRoutes = require("./routes/waitlistRoutes");
+const analyticsRoutes = require("./routes/analyticsRoutes");
+const exportRoutes = require("./routes/exportRoutes");
+const settingsRoutes = require("./routes/settingsRoutes");
 
 // Error handler middleware
 const errorHandler = require("./middleware/errorHandler");
@@ -54,6 +58,10 @@ app.use("/api/contact", contactRoutes);
 // Backwards-compatible alias (frontend had /api/contacts)
 app.use("/api/contacts", contactRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/waitlist", waitlistRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/export", exportRoutes);
+app.use("/api/settings", settingsRoutes);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 

@@ -120,18 +120,24 @@ function renderTeachers() {
 
   container.innerHTML = filtered
     .map((teacher) => {
-      const photo = teacher.photo ? imgUrl(teacher.photo) : "https://placehold.co/800x600?text=Azop+Academy";
+      const hasPhoto = teacher.photo;
+      const photoSection = hasPhoto 
+        ? `<img src="${imgUrl(teacher.photo)}" class="card-img-top" alt="${escapeHtml(teacher.name)}" loading="lazy">`
+        : `<div class="card-img-top d-flex align-items-center justify-content-center" style="height: 220px; background: linear-gradient(135deg, #ff7a18, #af002d); color: white;">
+            <i class="bi bi-person-circle" style="font-size: 80px;"></i>
+          </div>`;
       return `
       <div class="col-md-6 col-lg-4">
         <div class="card h-100 fade-in">
-          <img src="${photo}" class="card-img-top" alt="${escapeHtml(teacher.name)}" loading="lazy">
+          ${photoSection}
           <div class="card-body">
             <div class="d-flex align-items-start justify-content-between gap-2">
               <h5 class="card-title mb-1">${escapeHtml(teacher.name)}</h5>
               <span class="pill"><i class="bi bi-person-badge"></i> Teacher</span>
             </div>
             <div class="text-muted">Subject: ${escapeHtml(teacher.subject)}</div>
-            <div class="text-muted">Experience: ${escapeHtml(teacher.experience)}</div>
+            ${teacher.experience ? `<div class="text-muted">Experience: ${escapeHtml(teacher.experience)}</div>` : ''}
+            ${teacher.bio ? `<p class="card-text mt-2 small text-muted">${escapeHtml(teacher.bio)}</p>` : ''}
           </div>
         </div>
       </div>`;
@@ -210,11 +216,12 @@ async function loadGallery() {
     }
 
     setState(stateEl, null);
+    // Show all images (no limit) - optimized for many student photos
     container.innerHTML = images
-      .slice(0, 24)
-      .map((img) => {
+      .map((img, index) => {
         const src = imgUrl(img);
-        return `<div class="col-6 col-md-4 col-lg-3"><img class="fade-in" src="${src}" alt="Gallery image" loading="lazy" data-lightbox="${src}"></div>`;
+        const delay = (index % 12) * 30; // Staggered animation
+        return `<div class="col-6 col-md-4 col-lg-3" style="animation-delay: ${delay}ms;"><img class="fade-in gallery-image" src="${src}" alt="Gallery image ${index + 1}" loading="lazy" data-lightbox="${src}"></div>`;
       })
       .join("");
   } catch (e) {
@@ -261,10 +268,10 @@ $("contact-form").addEventListener("submit", async (e) => {
       method: "POST",
       body: JSON.stringify({ name, email, phone, subject, message }),
     });
-    alertBox.innerHTML = `<div class="alert alert-success">${escapeHtml(data.message || "Message sent!")}</div>`;
+    alertBox.innerHTML = `<div class="alert alert-success"><strong>Thank you!</strong> You've been added to our waitlist. We'll contact you soon when spots become available.</div>`;
     $("contact-form").reset();
   } catch (err) {
-    alertBox.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message || "Failed to send message")}</div>`;
+    alertBox.innerHTML = `<div class="alert alert-danger">${escapeHtml(err.message || "Failed to join waitlist. Please try again.")}</div>`;
   } finally {
     submit.disabled = false;
     spinner.classList.add("d-none");

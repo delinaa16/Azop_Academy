@@ -1,6 +1,13 @@
 const Teacher = require("../models/Teacher");
 const fs = require("fs");
 const path = require("path");
+const {
+  parsePagination,
+  buildPaginationMeta,
+  parseSort,
+  buildTextSearch,
+  buildAdvancedFilter
+} = require("../utils/queryHelpers");
 
 const uploadsImagesDir = path.join(__dirname, "..", "uploads", "images");
 
@@ -19,31 +26,42 @@ exports.createTeacher = async (req, res) => {
   }
 };
 
-// GET ALL TEACHERS (with optional search by name or subject)
+// GET ALL TEACHERS (with advanced filtering, sorting, and pagination)
 exports.getAllTeachers = async (req, res) => {
   try {
-    const filter = {};
+    const { page, limit, skip } = parsePagination(req);
+    const sort = parseSort(req, { order: 1, createdAt: -1 });
+
+    // Build filter
+    let filter = {};
+
+    // Basic filters
     if (req.query.name) filter.name = { $regex: req.query.name, $options: "i" };
     if (req.query.subject) filter.subject = { $regex: req.query.subject, $options: "i" };
     if (typeof req.query.isActive !== "undefined") {
       filter.isActive = req.query.isActive === "true";
     }
 
-    const page = Math.max(parseInt(req.query.page || "1", 10), 1);
-    const limit = Math.min(Math.max(parseInt(req.query.limit || "12", 10), 1), 100);
+    // Advanced search
+    if (req.query.search) {
+      const searchFilter = buildTextSearch(req.query.search, ["name", "subject", "bio"]);
+      filter = { ...filter, ...searchFilter };
+    }
+
+    // Advanced filters
+    const advancedFilter = buildAdvancedFilter(req, ["isActive", "order"]);
+    filter = { ...filter, ...advancedFilter };
 
     const [data, total] = await Promise.all([
-      Teacher.find(filter)
-        .sort({ order: 1, createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit),
-      Teacher.countDocuments(filter),
+      Teacher.find(filter).sort(sort).skip(skip).limit(limit),
+      Teacher.countDocuments(filter)
     ]);
 
-    // keep backwards compatibility: if client expects an array, allow ?raw=true
+    // Backwards compatibility: if client expects an array, allow ?raw=true
     if (req.query.raw === "true") return res.status(200).json(data);
 
-    res.status(200).json({ total, page, limit, data });
+    const meta = buildPaginationMeta(page, limit, total);
+    res.status(200).json({ success: true, data, meta });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -92,9 +110,13 @@ exports.updateTeachers = async (req, res) => {
       if (fs.existsSync(oldPhotoPath)) fs.unlinkSync(oldPhotoPath);
     }
 
-    teacher.name = name || teacher.name;
-    teacher.subject = subject || teacher.subject;
-    teacher.experience = experience || teacher.experience;
+    // Update fields
+    if (name !== undefined) teacher.name = name;
+    if (subject !== undefined) teacher.subject = subject;
+    if (experience !== undefined) teacher.experience = experience;
+    if (req.body.bio !== undefined) teacher.bio = req.body.bio;
+    if (req.body.isActive !== undefined) teacher.isActive = req.body.isActive;
+    if (req.body.order !== undefined) teacher.order = req.body.order;
     if (photo) teacher.photo = photo;
 
     await teacher.save();
@@ -134,6 +156,82 @@ exports.deleteAllTeachers = async (req, res) => {
     }
     await Teacher.deleteMany({});
     res.status(200).json({ message: "All teachers deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// BULK UPDATE TEACHERS
+exports.bulkUpdateTeachers = async (req, res) => {
+  try {
+    const { ids, updateData } = req.body;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ message: "IDs array is required" });
+    }
+
+    const result = await Teacher.updateMany(
+      { _id: { $in: ids } },
+      updateData,
+      { runValidators: true }
+    );
+
+    res.status(200).json({
+      message: "Teachers updated successfully",
+      modifiedCount: result.modifiedCount
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// REORDER TEACHERS
+exports.reorderTeachers = async (req, res) => {
+  try {
+    const { orderMap } = req.body; // { teacherId: order, ... }
+    if (!orderMap || typeof orderMap !== "object") {
+      return res.status(400).json({ message: "orderMap object is required" });
+    }
+
+    const updates = Object.keys(orderMap).map((id) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $set: { order: orderMap[id] } }
+      }
+    }));
+
+    await Teacher.bulkWrite(updates);
+    res.status(200).json({ message: "Teachers reordered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// GET TEACHER STATISTICS
+exports.getTeacherStats = async (req, res) => {
+  try {
+    const total = await Teacher.countDocuments();
+    const active = await Teacher.countDocuments({ isActive: true });
+    const inactive = total - active;
+
+    const bySubject = await Teacher.aggregate([
+      {
+        $group: {
+          _id: "$subject",
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        total,
+        active,
+        inactive,
+        bySubject
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -27,10 +27,10 @@
           <li class="nav-item"><a class="nav-link" data-section="teachers" href="#" onclick="showSection('teachers')">Teachers</a></li>
           <li class="nav-item"><a class="nav-link" data-section="programs" href="#" onclick="showSection('programs')">Programs</a></li>
           <li class="nav-item"><a class="nav-link" data-section="gallery" href="#" onclick="showSection('gallery')">Gallery</a></li>
-          <li class="nav-item"><a class="nav-link" data-section="contact" href="#" onclick="showSection('contact')">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" data-section="contact" href="#" onclick="showSection('contact')">Waitlist</a></li>
           <li class="nav-item ms-lg-2">
             <a class="btn btn-brand btn-sm px-3" href="#" onclick="showSection('contact')">
-              <i class="bi bi-stars me-1"></i> Enroll
+              <i class="bi bi-list-check me-1"></i> Join Waitlist
             </a>
           </li>
         </ul>
@@ -43,15 +43,15 @@
     <div class="container py-5 position-relative">
       <div class="row align-items-center g-4">
         <div class="col-lg-7">
-          <span class="badge badge-soft mb-3"><i class="bi bi-lightning-charge-fill me-1"></i> Modern learning • Real results</span>
-          <h1 class="display-4 fw-bold lh-sm">Where creativity meets knowledge — and young minds thrive.</h1>
-          <p class="lead text-white-75 mt-3">Azop Academy is a warm, inspiring place for students to learn, build confidence, and grow with caring teachers and engaging programs.</p>
+          <span class="badge badge-soft mb-3"><i class="bi bi-heart-fill me-1"></i> Nurturing young minds • Play-based learning</span>
+          <h1 class="display-4 fw-bold lh-sm">Where little learners discover, play, and grow with joy.</h1>
+          <p class="lead text-white-75 mt-3">Azop Kindergarten is a warm, safe, and nurturing environment where children ages 3-6 learn through play, creativity, and exploration. Our caring teachers and fun activities help every child thrive.</p>
           <div class="d-flex flex-wrap gap-2 mt-4">
             <a class="btn btn-brand btn-lg px-4" href="#" onclick="showSection('programs')">
               Explore Programs <i class="bi bi-arrow-right-short"></i>
             </a>
             <a class="btn btn-outline-light btn-lg px-4" href="#" onclick="showSection('contact')">
-              Talk to Us
+              Join Waitlist
             </a>
           </div>
           <div class="stats mt-5">
@@ -74,18 +74,19 @@
             <div class="hero-card-top">
               <div class="hero-icon"><i class="bi bi-mortarboard-fill"></i></div>
               <div>
-                <div class="fw-semibold">Start a new journey</div>
-                <div class="text-muted small">Fast response • Friendly guidance</div>
+                <div class="fw-semibold">Your child's first school</div>
+                <div class="text-muted small">Warm welcome • Caring support</div>
               </div>
             </div>
             <ul class="hero-list mt-3">
-              <li><i class="bi bi-check2-circle"></i> Skilled, caring teachers</li>
-              <li><i class="bi bi-check2-circle"></i> Creative programs & activities</li>
-              <li><i class="bi bi-check2-circle"></i> Safe, supportive environment</li>
+              <li><i class="bi bi-check2-circle"></i> Experienced, nurturing teachers</li>
+              <li><i class="bi bi-check2-circle"></i> Play-based learning activities</li>
+              <li><i class="bi bi-check2-circle"></i> Safe, child-friendly environment</li>
+              <li><i class="bi bi-check2-circle"></i> Age-appropriate programs (3-6 years)</li>
             </ul>
             <div class="hero-card-cta mt-4">
               <button class="btn btn-dark w-100" onclick="showSection('contact')">
-                <i class="bi bi-chat-dots-fill me-1"></i> Request information
+                <i class="bi bi-list-check me-1"></i> Join Waitlist
               </button>
             </div>
           </div>
@@ -101,7 +102,7 @@
       <div class="section-head">
         <div>
           <h2 class="section-title mb-1">Meet Our Teachers</h2>
-          <p class="text-muted mb-0">Experienced mentors who inspire and support every student.</p>
+          <p class="text-muted mb-0">Caring, experienced educators who nurture and inspire every child.</p>
         </div>
         <div class="d-flex gap-2">
           <div class="input-group input-group-sm input-group-soft">
@@ -122,7 +123,7 @@
       <div class="section-head">
         <div>
           <h2 class="section-title mb-1">Our Programs</h2>
-          <p class="text-muted mb-0">Practical, engaging programs designed for real growth.</p>
+          <p class="text-muted mb-0">Fun, age-appropriate activities that spark curiosity and learning through play.</p>
         </div>
         <div class="d-flex gap-2">
           <div class="input-group input-group-sm input-group-soft">
@@ -142,8 +143,8 @@
     <section id="gallery" class="section d-none">
       <div class="section-head">
         <div>
-          <h2 class="section-title mb-1">Gallery</h2>
-          <p class="text-muted mb-0">Moments from classes, activities, and student creations.</p>
+          <h2 class="section-title mb-1">Our Little Stars</h2>
+          <p class="text-muted mb-0">Capturing precious moments of learning, play, and joy at Azop Kindergarten.</p>
         </div>
         <button class="btn btn-outline-secondary btn-sm" id="gallery-refresh">
           <i class="bi bi-arrow-clockwise"></i>
@@ -157,29 +158,29 @@
     <section id="contact" class="section d-none">
       <div class="section-head">
         <div>
-          <h2 class="section-title mb-1">Contact Us</h2>
-          <p class="text-muted mb-0">Send a message — we’ll respond as soon as possible.</p>
+          <h2 class="section-title mb-1">Join Our Waitlist</h2>
+          <p class="text-muted mb-0">Secure your child's spot! Fill out the form below and we'll contact you when enrollment opens.</p>
         </div>
       </div>
       <form id="contact-form" class="row g-3">
         <div class="col-md-6">
-          <input type="text" class="form-control" id="name" placeholder="Name" required>
+          <input type="text" class="form-control" id="name" placeholder="Child's Name" required>
         </div>
         <div class="col-md-6">
-          <input type="email" class="form-control" id="email" placeholder="Email" required>
+          <input type="email" class="form-control" id="email" placeholder="Parent/Guardian Email" required>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control" id="phone" placeholder="Phone">
+          <input type="text" class="form-control" id="phone" placeholder="Phone Number" required>
         </div>
         <div class="col-md-6">
-          <input type="text" class="form-control" id="subject" placeholder="Subject (optional)">
+          <input type="text" class="form-control" id="subject" placeholder="Child's Age / Class Interest (optional)">
         </div>
         <div class="col-12">
-          <textarea class="form-control" id="message" rows="4" placeholder="Your message" required></textarea>
+          <textarea class="form-control" id="message" rows="4" placeholder="Tell us about your child or any questions you have..." required></textarea>
         </div>
         <div class="col-12">
-          <button type="submit" class="btn btn-dark w-100" id="contact-submit">
-            <span class="btn-text">Send Message</span>
+          <button type="submit" class="btn btn-brand w-100" id="contact-submit">
+            <span class="btn-text">Join Waitlist</span>
             <span class="spinner-border spinner-border-sm ms-2 d-none" id="contact-spinner" role="status" aria-hidden="true"></span>
           </button>
         </div>
